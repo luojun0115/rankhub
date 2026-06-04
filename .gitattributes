@@ -1,9 +1,0 @@
-.githooks/* eol=lf
-deploy.sh eol=lf
-*.md eol=lf
-*.py eol=lf
-*.html eol=lf
-*.css eol=lf
-*.js eol=lf
-*.yml eol=lf
-*.svg eol=lf

@@ -20,38 +20,50 @@ SECTIONS = [
     {'id': 'xiaohongshu', 'emoji': '📕', 'name': '小红书排行榜'},
     {'id': 'ai-global', 'emoji': '🌍', 'name': '全球AI网站排行榜'},
     {'id': 'ai-china', 'emoji': '🇨🇳', 'name': '中国AI应用排行榜'},
+    {'id': 'track-research', 'emoji': '🔬', 'name': '赛道研究'},
+    {'id': 'draft', 'emoji': '📝', 'name': '待发布'},
 ]
 
 MONTHLY_RANKS = {
     'bilibili': [
-        ('2026年5月B站UP主排行榜', '更新于 2026-05-01', 'hot'),
-        ('2026年4月B站UP主排行榜', '更新于 2026-04-01', None),
-        ('2026年3月B站UP主排行榜', '更新于 2026-03-01', None),
+        ('2026年5月B站UP主排行榜', '更新于 2026-05-01', 'hot', None),
+        ('2026年4月B站UP主排行榜', '更新于 2026-04-01', None, None),
+        ('2026年3月B站UP主排行榜', '更新于 2026-03-01', None, None),
     ],
     'douyin': [
-        ('2026年5月抖音达人排行榜', '更新于 2026-05-01', 'new'),
-        ('2026年4月抖音达人排行榜', '更新于 2026-04-01', None),
-        ('2026年3月抖音达人排行榜', '更新于 2026-03-01', None),
+        ('2026年5月抖音达人排行榜', '更新于 2026-05-01', 'new', None),
+        ('2026年4月抖音达人排行榜', '更新于 2026-04-01', None, None),
+        ('2026年3月抖音达人排行榜', '更新于 2026-03-01', None, None),
     ],
     'wechat': [
-        ('2026年5月微信公众号排行榜', '更新于 2026-05-01', 'rising'),
-        ('2026年4月微信公众号排行榜', '更新于 2026-04-01', None),
-        ('2026年3月微信公众号排行榜', '更新于 2026-03-01', None),
+        ('2026年5月微信公众号排行榜', '更新于 2026-05-01', 'rising', None),
+        ('2026年4月微信公众号排行榜', '更新于 2026-04-01', None, None),
+        ('2026年3月微信公众号排行榜', '更新于 2026-03-01', None, None),
     ],
     'xiaohongshu': [
-        ('2026年5月小红书博主排行榜', '更新于 2026-05-01', 'hot'),
-        ('2026年4月小红书博主排行榜', '更新于 2026-04-01', None),
-        ('2026年3月小红书博主排行榜', '更新于 2026-03-01', None),
+        ('2026年5月小红书博主排行榜', '更新于 2026-05-01', 'hot', None),
+        ('2026年4月小红书博主排行榜', '更新于 2026-04-01', None, None),
+        ('2026年3月小红书博主排行榜', '更新于 2026-03-01', None, None),
     ],
     'ai-global': [
-        ('2026年5月全球AI网站排行榜', '更新于 2026-05-01', None),
-        ('2026年4月全球AI网站排行榜', '更新于 2026-04-01', None),
-        ('2026年3月全球AI网站排行榜', '更新于 2026-03-01', None),
+        ('2026年5月全球AI网站排行榜', '更新于 2026-05-01', None, None),
+        ('2026年4月全球AI网站排行榜', '更新于 2026-04-01', None, None),
+        ('2026年3月全球AI网站排行榜', '更新于 2026-03-01', None, None),
     ],
     'ai-china': [
-        ('2026年5月中国AI应用排行榜', '更新于 2026-05-01', 'new'),
-        ('2026年4月中国AI应用排行榜', '更新于 2026-04-01', None),
-        ('2026年3月中国AI应用排行榜', '更新于 2026-03-01', None),
+        ('2026年5月中国AI应用排行榜', '更新于 2026-05-01', 'new', None),
+        ('2026年4月中国AI应用排行榜', '更新于 2026-04-01', None, None),
+        ('2026年3月中国AI应用排行榜', '更新于 2026-03-01', None, None),
+    ],
+    'track-research': [
+        ('小红书赛道深度分析', '10大主流赛道 + 代表博主', 'hot', 'content/track-xiaohongshu.html'),
+        ('B站赛道深度分析', '9大分区趋势 + 头部UP主', None, 'content/track-bilibili.html'),
+        ('微信公众号赛道深度分析', '8大方向 + 变现路径', None, 'content/track-wechat.html'),
+    ],
+    'draft': [
+        ('小红书趋势周报 第1期', '2026年6月 内测预览', 'new', 'content/draft/xiaohongshu-weekly-1.html'),
+        ('B站热门UP主监测月报', '2026年5月 待审核', None, 'content/draft/bilibili-monthly-1.html'),
+        ('微信爆文拆解合集', '2026年6月 草稿', None, 'content/draft/wechat-hot-1.html'),
     ],
 }
 
@@ -70,13 +82,29 @@ def extract_title(md_content):
             return line[2:].strip()
     return '未命名页面'
 
-def generate_page(title, content, template, is_index=False):
+def generate_page(title, content, template, is_index=False, password_protected=False):
     base = '' if is_index else '../'
     html = template.replace('{{ base }}', base)
     html = html.replace('{{ title }}', title)
     if not is_index:
         breadcrumb = '<nav class="breadcrumb"><a href="' + base + 'index.html">首页</a> / <span>' + title + '</span></nav>\n'
         content = '<div class="content-page">\n' + breadcrumb + content + '\n</div>'
+    if password_protected:
+        gate_html = '''<div class="password-gate" id="passwordGate">
+  <div class="password-gate-card">
+    <div class="password-gate-icon">🔒</div>
+    <h2 class="password-gate-title">内容待发布</h2>
+    <p class="password-gate-desc">此内容为内部预览，请输入密码查看</p>
+    <div class="password-gate-input-group">
+      <input type="password" class="password-gate-input" id="passwordInput" placeholder="请输入密码" autocomplete="off">
+      <button class="password-gate-btn" id="passwordSubmit">验证</button>
+    </div>
+    <p class="password-gate-error" id="passwordError">密码错误，请重试</p>
+  </div>
+</div>
+<div class="password-content" id="passwordContent" style="display:none">'''
+        content = gate_html + content + '</div>'
+        html = html.replace('</body>', '<script src="' + base + 'js/password.js"></script>\n</body>')
     html = html.replace('{{ content }}', content)
     return html
 
@@ -103,8 +131,10 @@ def build_rank_item(title, meta, badge, rank_num, href):
 def build_section(section):
     items_html = ''
     ranks = MONTHLY_RANKS[section['id']]
-    for i, (title, meta, badge) in enumerate(ranks, 1):
-        items_html += build_rank_item(title, meta, badge, i, 'content/' + section['id'] + '.html')
+    for i, item in enumerate(ranks, 1):
+        title, meta, badge = item[0], item[1], item[2]
+        href = item[3] if len(item) > 3 and item[3] else 'content/' + section['id'] + '.html'
+        items_html += build_rank_item(title, meta, badge, i, href)
 
     return (
         '<div class="section" data-category="' + section['name'] + '">'
@@ -151,8 +181,9 @@ def process_md_files():
                 md_content = f.read()
             title = extract_title(md_content)
             html_content = md_to_html(md_content)
-            full_html = generate_page(title, html_content, template, is_index=False)
             relative_path = os.path.relpath(md_path, CONTENT_DIR)
+            is_draft = 'draft' in relative_path.split(os.sep)
+            full_html = generate_page(title, html_content, template, is_index=False, password_protected=is_draft)
             output_path = os.path.join(OUTPUT_DIR, 'content', relative_path.replace('.md', '.html'))
             os.makedirs(os.path.dirname(output_path), exist_ok=True)
             with open(output_path, 'w', encoding='utf-8') as f:

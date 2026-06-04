@@ -96,4 +96,6 @@
 ## 许可证
 
 MIT License
-# rankhub
+
+# 致谢
+感谢opencode、cline、codebuddy、coploit等工具，提供免费使用机会。
